@@ -30,10 +30,10 @@ class SocketThrdServer extends JFrame{
       System.exit(-1);
     }
     while(true){
-      ClientWorker w;
+      ClientWorker clientWorker;
       try{
-        w = new ClientWorker(server.accept(), textArea);
-        Thread t = new Thread(w);
+        clientWorker = new ClientWorker(server.accept(), textArea);
+        Thread t = new Thread(clientWorker);
         t.start();
       } catch (IOException e) {
         System.out.println("Accept failed: 4444");
@@ -54,16 +54,19 @@ class SocketThrdServer extends JFrame{
   }
 
   public static void main(String[] args){
-        SocketThrdServer frame = new SocketThrdServer();
+    SocketThrdServer frame = new SocketThrdServer();
 	frame.setTitle("Server Program");
-        WindowListener l = new WindowAdapter() {
-                public void windowClosing(WindowEvent e) {
-                        System.exit(0);
-                }
-        };
-        frame.addWindowListener(l);
-        frame.pack();
-        frame.setVisible(true);
-        frame.listenSocket();
+    WindowListener l = new WindowAdapter()
+    {
+        public void windowClosing(WindowEvent e)
+        {
+                System.exit(0);
+        }
+    };
+
+    frame.addWindowListener(l);
+    frame.pack();
+    frame.setVisible(true);
+    frame.listenSocket();
   }
 }
