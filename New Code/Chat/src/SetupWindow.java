@@ -46,4 +46,14 @@ public class SetupWindow extends JPanel {
 		c.insets = insets;
         add(userNameField,c);
     }
+
+    public String getHostName()
+    {
+        return hostNameField.getText();
+    }
+
+    public String getUserName()
+    {
+        return userNameField.getText();
+    }
 }

@@ -25,9 +25,12 @@ public class ChatWindow extends JPanel implements ActionListener{
     Socket socket = null;
     PrintWriter out = null;
     BufferedReader in = null;
+    String userName ="USER NAME NOT SET PROPERLY";
 
-    public ChatWindow()
+    public ChatWindow(String userName)
     {
+        this.userName = userName;
+        //System.out.println("userName: " + userName);
         setLayout(new GridBagLayout());
 		GridBagConstraints c = new GridBagConstraints();
 
@@ -71,14 +74,15 @@ public class ChatWindow extends JPanel implements ActionListener{
          if(source == sendButton)
          {
               //Send data over socket
-              String text = textField.getText();
+              String text = userName + " : " + textField.getText();
               out.println(text);
               textField.setText(new String(""));
               //Receive text from server
               try
               {
                   String line = in.readLine();
-                  System.out.println("Text received :" + line);
+                  textArea.setText(line);
+                  System.out.println("Text received => " + line);
               } catch (IOException e)
               {
 
@@ -87,15 +91,13 @@ public class ChatWindow extends JPanel implements ActionListener{
               }
          }
     }
-    public void listenSocket()
+    public void listenSocket(String hostName)
     {
         //Create socket connection
         try
         {
-            socket = new Socket("ASSKICKER", 4444);
+            socket = new Socket(hostName, 4444);
             out = new PrintWriter(socket.getOutputStream(), true);
-            System.out.println("Enter in a user name:");
-            String userName = new BufferedReader(new InputStreamReader(System.in)).readLine();
             out.println(userName);
             in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
         } catch (UnknownHostException e)

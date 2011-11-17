@@ -7,7 +7,7 @@ import java.io.*;
 import java.net.*;
 
 class ClientWorker implements Runnable {
-  private Socket client, server;
+  private Socket client;
   private JTextArea textArea;
   private String userName;
   
@@ -19,7 +19,7 @@ class ClientWorker implements Runnable {
   }
 
   public void run(){
-        String line;
+        String line, fullLine;
         BufferedReader in = null;
         PrintWriter outClient = null;
         //PrintWriter outServer = null;
@@ -41,11 +41,22 @@ class ClientWorker implements Runnable {
               {
                     line = in.readLine();
                     //Send data back to client
-
-                    textArea.append(line);
-                    textArea.append("\n");
-                    outClient.println(textArea.getText());
-                    System.out.println("Thread to client: " + textArea.getText());
+                    if(line != null)
+                    {
+                        if(line.contains("/quit") || line.contains("/exit") || line.contains("/part") )
+                        {
+                            textArea.append(">> " + userName + " has left the room.");
+                            textArea.append("\n");
+                        }
+                        else
+                        {
+                            //fullLine = userName + ": " + line;     Already Handled in ChatWindow
+                            textArea.append(line);
+                            textArea.append("\n");
+                            outClient.println(textArea.getText());
+                            System.out.println("Thread to client: " + textArea.getText());
+                        }
+                    }
 
               } catch (IOException e)
               {

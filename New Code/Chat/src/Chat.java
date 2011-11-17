@@ -25,8 +25,6 @@ public class Chat extends JApplet implements ActionListener {
 
         getContentPane().add(connect, BorderLayout.SOUTH);
 
-        chatWindow = new ChatWindow();
-        chatWindow.listenSocket();
         setupWindow = new SetupWindow();
         currentlyViewing = setupWindow;
 
@@ -34,11 +32,17 @@ public class Chat extends JApplet implements ActionListener {
     }
     public void actionPerformed(ActionEvent e)
     {
+        String userName = setupWindow.getUserName();
+        String hostName = setupWindow.getHostName();
+        System.out.println("userName: " + userName);
+        System.out.println("hostName: " + hostName);
         getContentPane().remove(currentlyViewing);
         validate();
 
         if (e.getSource() == connect)
         {
+            chatWindow = new ChatWindow(userName);
+            chatWindow.listenSocket(hostName);
             currentlyViewing = chatWindow;
             connect.setVisible(false);
         }
