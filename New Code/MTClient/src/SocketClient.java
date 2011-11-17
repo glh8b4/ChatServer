@@ -9,7 +9,7 @@ import java.net.*;
 class SocketClient extends JFrame
 		 implements ActionListener {
 
-   JLabel text, clicked;
+   JLabel text;
    JButton button;
    JPanel panel;
    JTextField textField;
@@ -56,6 +56,9 @@ class SocketClient extends JFrame
      try{
        socket = new Socket("ASSKICKER", 4444);
        out = new PrintWriter(socket.getOutputStream(), true);
+       System.out.println("Enter in a user name:");
+       String userName = new BufferedReader(new InputStreamReader(System.in)).readLine();
+       out.println(userName);
        in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
      } catch (UnknownHostException e) {
        System.out.println("Unknown host: kq6py.eng");
@@ -68,9 +71,11 @@ class SocketClient extends JFrame
 
    public static void main(String[] args){
         SocketClient frame = new SocketClient();
-	frame.setTitle("Client Program");
-        WindowListener l = new WindowAdapter() {
-                public void windowClosing(WindowEvent e) {
+	    frame.setTitle("Client Program");
+        WindowListener l = new WindowAdapter()
+        {
+                public void windowClosing(WindowEvent e)
+                {
                         System.exit(0);
                 }
         };
@@ -78,6 +83,6 @@ class SocketClient extends JFrame
         frame.addWindowListener(l);
         frame.pack();
         frame.setVisible(true);
-	frame.listenSocket();
+	    frame.listenSocket();
   }
 }

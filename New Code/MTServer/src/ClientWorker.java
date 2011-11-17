@@ -7,22 +7,28 @@ import java.io.*;
 import java.net.*;
 
 class ClientWorker implements Runnable {
-  private Socket client;
+  private Socket client, server;
   private JTextArea textArea;
+  private String userName;
   
-  ClientWorker(Socket client, JTextArea textArea) {
-   this.client = client;
-   this.textArea = textArea;   
+  ClientWorker(Socket client, JTextArea textArea, String userName)//, Socket server)
+  {
+       this.client = client;
+       this.textArea = textArea;
+       this.userName = userName;
   }
 
   public void run(){
         String line;
         BufferedReader in = null;
-        PrintWriter out = null;
+        PrintWriter outClient = null;
+        //PrintWriter outServer = null;
         try
         {
               in = new BufferedReader(new InputStreamReader(client.getInputStream()));
-              out = new PrintWriter(client.getOutputStream(), true);
+              outClient = new PrintWriter(client.getOutputStream(), true);
+              //outServer = new PrintWriter(server.getOutputStream(), true);
+
         }catch (IOException e)
         {
               System.out.println("in or out failed");
@@ -35,9 +41,10 @@ class ClientWorker implements Runnable {
               {
                     line = in.readLine();
                     //Send data back to client
-                    System.out.println("Sending to client: " + line);
-                    out.println(line);
+                    System.out.println("Thread to client: " + line);
+                    outClient.println(line);
                     textArea.append(line);
+                    //textArea.append("/n");
               } catch (IOException e)
               {
                     System.out.println("Read failed");
