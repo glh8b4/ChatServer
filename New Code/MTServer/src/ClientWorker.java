@@ -41,10 +41,12 @@ class ClientWorker implements Runnable {
               {
                     line = in.readLine();
                     //Send data back to client
-                    System.out.println("Thread to client: " + line);
-                    outClient.println(line);
+
                     textArea.append(line);
-                    //textArea.append("/n");
+                    textArea.append("\n");
+                    outClient.println(textArea.getText());
+                    System.out.println("Thread to client: " + textArea.getText());
+
               } catch (IOException e)
               {
                     System.out.println("Read failed");
