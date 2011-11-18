@@ -10,15 +10,15 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 
 /**
- * Created by IntelliJ IDEA.
+ * Created by Harmon and Werckmann
  * User: Administrator
  * Date: 11/11/11
  * Time: 2:35 PM
- * To change this template use File | Settings | File Templates.
  */
-public class ChatWindow extends JPanel implements ActionListener{
+
+public class ChatWindow extends JPanel implements ActionListener, MessageListener {
     JTextArea textArea;
-	JButton sendButton;
+	JButton sendButton, exitButton;
 	JScrollPane scrollingArea;
 	Insets insets = new Insets(10,10,10,10);
     JTextField textField;
@@ -26,25 +26,38 @@ public class ChatWindow extends JPanel implements ActionListener{
     PrintWriter out = null;
     BufferedReader in = null;
     String userName ="USER NAME NOT SET PROPERLY";
+    String messages = "";
 
+    //Constructor sets up the GUI using a GridBagLayout
     public ChatWindow(String userName)
     {
         this.userName = userName;
-        //System.out.println("userName: " + userName);
         setLayout(new GridBagLayout());
 		GridBagConstraints c = new GridBagConstraints();
 
-        textArea = new JTextArea("");
+        exitButton = new JButton("Exit");
+        exitButton.addActionListener(this);
+        c.fill = GridBagConstraints.HORIZONTAL;
+		c.ipady = 35; //make this tall
+		c.ipadx = 20;
+		c.gridwidth = 2;
+		c.gridx = 0;
+		c.gridy = 0;
+		c.insets = insets;
+        exitButton.addActionListener(this);
+		add(exitButton,c);
 
+        textArea = new JTextArea("");
 		textArea.setLineWrap(true);
 		textArea.setEditable(false);
+        textArea.setText("Welcome to the Chat Server! \n");
 		scrollingArea = new JScrollPane(textArea);
 		c.fill = GridBagConstraints.HORIZONTAL;
 		c.ipady = 200; //make this tall
 		c.ipadx = 200;
 		c.gridwidth = 2;
 		c.gridx = 0;
-		c.gridy = 0;
+		c.gridy = 1;
 		c.insets = insets;
 		add(scrollingArea,c);
 		
@@ -53,7 +66,7 @@ public class ChatWindow extends JPanel implements ActionListener{
 		c.ipady = 40;
 		c.gridwidth = 1;
 		c.gridx = 0;
-		c.gridy = 1;
+		c.gridy = 2;
         textField.addActionListener(this);
 		add(textField,c);
 		
@@ -62,35 +75,66 @@ public class ChatWindow extends JPanel implements ActionListener{
 		c.ipady = 34;
 		c.ipadx = 20;
 		c.gridx = 1;
-		c.gridy = 1;
+		c.gridy = 2;
         sendButton.addActionListener(this);
 		add(sendButton,c);
     }
 
+    //Performs when one of the buttons is pressed
+    //sendButton sends the message and exitButton ends the client
     public void actionPerformed(ActionEvent event)
     {
-         Object source = event.getSource();
-
-         if(source == sendButton)
+         if(event.getSource() == sendButton)
          {
-              //Send data over socket
-              String text = userName + " : " + textField.getText();
-              out.println(text);
-              textField.setText(new String(""));
-              //Receive text from server
-              try
-              {
-                  String line = in.readLine();
-                  textArea.setText(line);
-                  System.out.println("Text received => " + line);
-              } catch (IOException e)
-              {
+             String text = userName + " : " + textField.getText();
+             if(text.equals(userName + " : /exit") || text.equals(userName + " : /part")
+                                                   || text.equals(userName + " : /quit"))
+             {
+                 out.println(userName + " : has left the Chat Room");
+                 try
+                 {
+                    socket.close();
+                 } catch(IOException e)
+                 {
+                     System.out.println("Failed to close the socket!");
+                     System.exit(1);
+                 }
+                 System.exit(0);
+             }
+             else
+             {
+                 //Send data over socket
+                 out.println(text);
+                 textField.setText("");
+             }
 
-              System.out.println("Read failed");
-              System.exit(1);
-              }
+
+         }
+         if (event.getSource() == exitButton)
+         {
+             //User selected exit, so the client will exit
+             out.println(userName + " : has left the Chat Room");
+             try
+             {
+                socket.close();
+             } catch(IOException e)
+             {
+                 System.out.println("Failed to close the socket!");
+                 System.exit(1);
+             }
+             System.exit(0);
          }
     }
+
+    //Called by the SocketObserver when there is input coming down the socket
+    public void messageRecieved(String message)
+    {
+        //Receive text from server
+        messages = messages + "\n" + message;
+        textArea.setText(messages);
+    }
+
+    //initiates the socket, input and output streams, and socket observer
     public void listenSocket(String hostName)
     {
         //Create socket connection
@@ -100,6 +144,12 @@ public class ChatWindow extends JPanel implements ActionListener{
             out = new PrintWriter(socket.getOutputStream(), true);
             out.println(userName);
             in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+
+            //start the means to listen in on the socket
+            SocketObserver observer = new SocketObserver(in);//, serverSocket);
+            observer.listener = this;
+            Thread t = new Thread(observer);
+            t.start();
         } catch (UnknownHostException e)
         {
             System.out.println("Unknown host: kq6py.eng");
@@ -110,5 +160,4 @@ public class ChatWindow extends JPanel implements ActionListener{
             System.exit(1);
         }
     }
-
 }

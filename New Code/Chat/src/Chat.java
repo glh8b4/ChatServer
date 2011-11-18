@@ -1,10 +1,11 @@
 import javax.swing.*;
+import javax.swing.plaf.basic.BasicInternalFrameTitlePane;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 /**
- * Created by IntelliJ IDEA.
+ * Created by Harmon and Werckmann
  * User: Administrator
  * Date: 11/12/11
  * Time: 11:50 AM
@@ -16,6 +17,7 @@ public class Chat extends JApplet implements ActionListener {
     SetupWindow setupWindow;
     JButton connect;
 
+    //This is effectively the constructor used initialize the JApplet
     public void init()
     {
         setLayout(new BorderLayout());
@@ -30,12 +32,12 @@ public class Chat extends JApplet implements ActionListener {
 
         getContentPane().add(currentlyViewing);
     }
+
+    //Listens for the connect button to be pressed
     public void actionPerformed(ActionEvent e)
     {
         String userName = setupWindow.getUserName();
         String hostName = setupWindow.getHostName();
-        System.out.println("userName: " + userName);
-        System.out.println("hostName: " + hostName);
         getContentPane().remove(currentlyViewing);
         validate();
 
@@ -43,8 +45,8 @@ public class Chat extends JApplet implements ActionListener {
         {
             chatWindow = new ChatWindow(userName);
             chatWindow.listenSocket(hostName);
-            currentlyViewing = chatWindow;
-            connect.setVisible(false);
+            currentlyViewing = chatWindow;     //switch from the setup window to the chat window
+            connect.setVisible(false);  //make the button invisible
         }
 
         getContentPane().add(currentlyViewing);

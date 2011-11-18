@@ -2,7 +2,7 @@ import javax.swing.*;
 import java.awt.*;
 
 /**
- * Created by IntelliJ IDEA.
+ * Created by Harmon and Werckmann
  * User: Administrator
  * Date: 11/12/11
  * Time: 12:19 PM
@@ -13,6 +13,7 @@ public class SetupWindow extends JPanel {
     JTextField hostNameField, userNameField;
     Insets insets = new Insets(10,10,10,10);
 
+    //Constructor uses a gridbaglayout to specify the layout of the GUI
     public SetupWindow()
     {
         setLayout(new GridBagLayout());
@@ -47,11 +48,13 @@ public class SetupWindow extends JPanel {
         add(userNameField,c);
     }
 
+    //Get function to return the value of the hostName
     public String getHostName()
     {
         return hostNameField.getText();
     }
 
+    //Get function to return the value of the userName
     public String getUserName()
     {
         return userNameField.getText();
